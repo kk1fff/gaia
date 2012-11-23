@@ -80,6 +80,11 @@ var LockScreen = {
   promptIntervalId: 0,
 
   /*
+  * Carrier name data.
+  */
+  carrierData: {},
+
+  /*
   * start/end curve path data (position, curve control point)
   */
   CURVE_START_DATA: 'M0,80 C100,150 220,150 320,80',
@@ -140,6 +145,7 @@ var LockScreen = {
     if (conn && conn.voice) {
       conn.addEventListener('voicechange', this);
       conn.addEventListener('cardstatechange', this);
+      conn.addEventListener('iccinfochange', this);
       this.updateConnState();
       this.connstate.hidden = false;
     }
@@ -250,6 +256,9 @@ var LockScreen = {
         }
 
         this.lockIfEnabled(true);
+        break;
+      case 'iccinfochange':
+        this.updateSpn();
         break;
       case 'voicechange':
       case 'cardstatechange':
@@ -706,6 +715,30 @@ var LockScreen = {
     });
   },
 
+  getCarrierName: function ls_getCarrierName() {
+    var carrierName = '';
+    if (this.carrierData.plmnName) {
+      carrierName += this.carrierData.plmnName;
+    }
+    if (this.carrierData.spn) {
+      if (carrierName.length > 0) {
+        carrierName += ', ';
+      }
+      carrierName += this.carrierData.spn;
+    }
+    console.log("getCarrierName: " + carrierName);
+    return carrierName;
+  },
+
+  updateSpn: function ls_updateSpn() {
+    var conn = window.navigator.mozMobileConnection;
+    this.carrierData = {
+      spn : conn.iccInfo.spn,
+      isDisplayNetworkNameRequired : conn.iccInfo.isDisplayNetworkNameRequired,
+      isDisplaySpnRequired : conn.iccInfo.isDisplaySpnRequired
+    };
+  },
+
   updateTime: function ls_updateTime() {
     if (!this.locked)
       return;
@@ -815,7 +848,9 @@ var LockScreen = {
         (regions[lac] ? regions[lac] + ' ' + lac : '');
     }
 
-    var carrierName = voice.network.shortName || voice.network.longName;
+    this.carrierData.plmnName = voice.network.shortName || voice.network.longName;
+
+    var carrierName = this.getCarrierName();
 
     if (voice.roaming) {
       var l10nArgs = { operator: carrierName };
