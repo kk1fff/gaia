@@ -58,6 +58,7 @@ window.navigator.mozSetMessageHandler('activity', function actHandle(activity) {
     return;
   MessageManager.lockActivity = true;
   activity.postResult({ status: 'accepted' });
+  console.log("Got message thread.");
   var number = activity.source.data.number;
   showThreadFromSystemMessage(number);
 });
@@ -68,6 +69,9 @@ window.navigator.mozSetMessageHandler('activity', function actHandle(activity) {
 if (!window.location.hash.length) {
   window.navigator.mozSetMessageHandler('sms-received',
     function smsReceived(message) {
+      console.log("Patrick: got 'sms-received'");
+
+
       // The black list includes numbers for which notifications should not
       // progress to the user. Se blackllist.js for more information.
       var number = message.sender;

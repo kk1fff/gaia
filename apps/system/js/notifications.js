@@ -218,6 +218,7 @@ var NotificationScreen = {
   },
 
   addNotification: function ns_addNotification(detail) {
+    console.log("addNotification: " + JSON.stringify(detail));
     var notificationNode = document.createElement('div');
     notificationNode.className = 'notification';
 
