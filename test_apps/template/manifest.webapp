@@ -6,6 +6,28 @@
     "name": "The Gaia Team",
     "url": "https://github.com/mozilla-b2g/gaia"
   },
+  "permissions": {
+    "storage":{},
+    "mobileconnection":{},
+    "bluetooth":{},
+    "device-storage:pictures":{ "access": "readonly" },
+    "device-storage:music":{ "access": "readonly" },
+    "device-storage:videos":{ "access": "readonly" },
+    "device-storage:sdcard":{ "access": "readonly" },
+    "device-storage:apps":{ "access": "readonly" },
+    "webapps-manage":{},
+    "permissions":{},
+    "settings":{ "access": "readwrite" },
+    "wifi-manage":{},
+    "attention":{},
+    "time":{},
+    "desktop-notification":{},
+    "power":{},
+    "idle":{},
+    "telephony":{},
+    "audio-channel-notification":{},
+    "indexedDB-chrome-settings":{ "access": "readonly"}
+  },
   "locales": {
     "ar": {
       "name": "Template",
