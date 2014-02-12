@@ -25,7 +25,7 @@ CLEAN_PROFILE := 0
 # In user (production) builds we put gaia apps in /system/b2g/webapps
 ifneq ($(filter user userdebug, $(TARGET_BUILD_VARIANT)),)
 GAIA_MAKE_FLAGS += PRODUCTION=1
-B2G_SYSTEM_APPS := 1
+#B2G_SYSTEM_APPS := 1
 endif
 
 # Gaia currently needs to specify the default scale value manually or pictures
@@ -35,7 +35,7 @@ GAIA_MAKE_FLAGS += GAIA_DEV_PIXELS_PER_PX=$(GAIA_DEV_PIXELS_PER_PX)
 endif
 
 ifeq ($(B2G_SYSTEM_APPS),1)
-GAIA_MAKE_FLAGS += B2G_SYSTEM_APPS=1
+#GAIA_MAKE_FLAGS += B2G_SYSTEM_APPS=1
 GAIA_APP_INSTALL_PARENT := $(TARGET_OUT)/b2g
 CLEAN_PROFILE := 1
 endif

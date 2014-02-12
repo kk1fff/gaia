@@ -140,7 +140,7 @@ NPM_REGISTRY?=http://registry.npmjs.org
 export npm_config_loglevel=warn
 MARIONETTE_RUNNER_HOST?=marionette-b2gdesktop-host
 
-GAIA_INSTALL_PARENT?=/system/b2g
+GAIA_INSTALL_PARENT?=/data/local
 
 ifeq ($(MAKECMDGOALS), demo)
 GAIA_DOMAIN=thisdomaindoesnotexist.org
