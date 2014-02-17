@@ -31,12 +31,14 @@ var SettingsListener = {
   observe: function sl_observe(name, defaultValue, callback) {
     var settings = window.navigator.mozSettings;
     if (!settings) {
+      dump("TEST: settings_listener.js: SettingsListener.observe callback [default]: " + name);
       window.setTimeout(function() { callback(defaultValue); });
       return;
     }
 
     var req;
     try {
+      dump("TEST: settings_listener.js: getSettingsLock: " + evt.settingName);
       req = this.getSettingsLock().get(name);
     } catch (e) {
       // It is possible (but rare) for getSettingsLock() to return
@@ -51,11 +53,13 @@ var SettingsListener = {
     }
 
     req.addEventListener('success', (function onsuccess() {
+      dump("TEST: settings_listener.js: SettingsListener.observe callback [request]: " + name);
       callback(typeof(req.result[name]) != 'undefined' ?
         req.result[name] : defaultValue);
     }));
 
     settings.addObserver(name, function settingChanged(evt) {
+      dump("TEST: settings_listener.js: SettingsListener.observe callback [change]: " + name);        
       callback(evt.settingValue);
     });
   }

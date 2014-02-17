@@ -4,6 +4,13 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <meta charset="utf-8">
     <title>Dialer</title>
+<!--    <script type="application/javascript">
+      // dump("TEST: dialer/index.html page start loading\n");
+      window.addEventListener('load', function x() {
+        window.removeEventListener('load', x);
+        // dump("TEST: dialer/index.html loaded\n");
+      });
+    </script> -->
 
     <!-- Localization -->
     <script defer src="/shared/js/lazy_loader.js"></script>
@@ -22,6 +29,8 @@
     <link rel="stylesheet" type="text/css" href="/shared/style_unstable/tabs.css">
 
     <!-- JS -->
+    <script defer type="application/javascript" src="/shared/js/settings_listener.js"></script>
+    <script defer type="application/javascript" src="/shared/js/settings_url.js"></script>
     <script defer src="/dialer/js/utils.js"></script>
     <script defer src="/dialer/js/tone_player.js"></script>
     <script defer src="/dialer/js/keypad.js"></script>

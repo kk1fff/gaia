@@ -11,6 +11,7 @@ var CallsHandler = (function callsHandler() {
 
   var toneInterval = null; // Timer used to play the waiting tone
   var telephony = window.navigator.mozTelephony;
+  dump("TEST: register new oncallschanged\n");
   telephony.oncallschanged = onCallsChanged;
 
   var settings = window.navigator.mozSettings;
@@ -21,7 +22,9 @@ var CallsHandler = (function callsHandler() {
 
   /* === Settings === */
   var activePhoneSound = null;
+  dump("TEST: calls_handler.js observe settings: audio.volume.notification");
   SettingsListener.observe('audio.volume.notification', 7, function(value) {
+    dump("TEST: calls_handler.js observed settings: audio.volume.notification");
     activePhoneSound = !!value;
     if (ringing && activePhoneSound) {
       ringtonePlayer.play();
@@ -29,11 +32,14 @@ var CallsHandler = (function callsHandler() {
   });
 
   var phoneSoundURL = new SettingsURL();
+  dump("TEST: calls_handler.js observe settings: dialer.ringtone");
   SettingsListener.observe('dialer.ringtone', '', function(value) {
+    dump("TEST: calls_handler.js observed settings: dialer.ringtone: " + phoneSoundURL.set(value));
     ringtonePlayer.pause();
     ringtonePlayer.src = phoneSoundURL.set(value);
 
     if (ringing && activePhoneSound) {
+      dump("TEST: calls_handler.js ring: dialer.ringtone");
       ringtonePlayer.play();
     }
   });
@@ -247,6 +253,7 @@ var CallsHandler = (function callsHandler() {
   }
 
   function handleFirstIncoming(call) {
+    dump("TEST: calls_handler.js: handleFirstIncoming\n");
     var vibrateInterval = 0;
     if (activateVibration != false) {
       vibrateInterval = window.setInterval(function vibrate() {
@@ -258,6 +265,7 @@ var CallsHandler = (function callsHandler() {
     }
 
     if (activePhoneSound == true) {
+      dump("TEST: calls_handler.js handleFirstIncoming: ring");
       ringtonePlayer.play();
       ringing = true;
     } else if (activePhoneSound == null) {
@@ -801,7 +809,7 @@ var CallsHandler = (function callsHandler() {
 
 window.addEventListener('load', function callSetup(evt) {
   window.removeEventListener('load', callSetup);
-
+  dump("TEST: calls_handler.js onload");
   CallsHandler.setup();
   CallScreen.init();
   KeypadManager.init(true);

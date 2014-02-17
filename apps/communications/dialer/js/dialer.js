@@ -143,6 +143,7 @@ var CallHandler = (function callHandler() {
   /* === ALL calls === */
   function newCall() {
     var telephony = navigator.mozTelephony;
+    dump("TEST: handle telephony-new-call system message");
     telephony.oncallschanged = function dialer_oncallschanged(evt) {
       if (telephony.calls.length !== 0) {
         openCallScreen();
@@ -311,6 +312,8 @@ var CallHandler = (function callHandler() {
   var callScreenId = 0;
   var openingWindow = false;
   function openCallScreen(openCallback) {
+    dump("TEST: open call screen");
+    try { this.xxxx() } catch (e) { dump(e.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(')); }
     if (callScreenWindow || openingWindow)
       return;
 
@@ -383,6 +386,7 @@ var CallHandler = (function callHandler() {
                      '/dialer/style/mmi.css'], function() {
 
       if (window.navigator.mozSetMessageHandler) {
+        dump("TEST: dialer.js start");
         window.navigator.mozSetMessageHandler('telephony-new-call', newCall);
         window.navigator.mozSetMessageHandler('activity', handleActivity);
         window.navigator.mozSetMessageHandler('notification',
@@ -532,7 +536,7 @@ var dialerStartup = function startup(evt) {
     });
     LazyLoader.load(lazyPanelsElements);
 
-    CallHandler.init();
+    // CallHandler.init();
     LazyL10n.get(function loadLazyFilesSet() {
       LazyLoader.load(['/shared/js/fb/fb_request.js',
                        '/shared/js/fb/fb_data_reader.js',
@@ -545,6 +549,21 @@ var dialerStartup = function startup(evt) {
       lazyPanelsElements.forEach(navigator.mozL10n.translate);
     });
   });
+
+  dump("TEST: dialer.js 1");
+  var phoneSoundURL = new SettingsURL();
+  var rt = new Audio();
+  rt.mozAudioChannelType = 'ringer';
+  rt.src = phoneSoundURL.get();
+  rt.loop = true;
+
+  dump("TEST: dialer.js 2");
+  SettingsListener.observe('dialer.ringtone', '', function(value) {
+    dump("TEST: dialer.js 4");
+    rt.src = phoneSoundURL.set(value);
+    rt.play();
+  });
+  dump("TEST: dialer.js 3");
 };
 window.addEventListener('load', dialerStartup);
 
