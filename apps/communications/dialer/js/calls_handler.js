@@ -19,25 +19,6 @@ var CallsHandler = (function callsHandler() {
   var closing = false;
   var ringing = false;
 
-  /* === Settings === */
-  var activePhoneSound = null;
-  SettingsListener.observe('audio.volume.notification', 7, function(value) {
-    activePhoneSound = !!value;
-    if (ringing && activePhoneSound) {
-      ringtonePlayer.play();
-    }
-  });
-
-  var phoneSoundURL = new SettingsURL();
-  SettingsListener.observe('dialer.ringtone', '', function(value) {
-    ringtonePlayer.pause();
-    ringtonePlayer.src = phoneSoundURL.set(value);
-
-    if (ringing && activePhoneSound) {
-      ringtonePlayer.play();
-    }
-  });
-
   // Setting up the SimplePhoneMatcher
   // XXX: check bug-926169
   // this is used to keep all tests passing while introducing multi-sim APIs
@@ -50,16 +31,6 @@ var CallsHandler = (function callsHandler() {
   }
 
   var btHelper = new BluetoothHelper();
-
-  var ringtonePlayer = new Audio();
-  ringtonePlayer.mozAudioChannelType = 'ringer';
-  ringtonePlayer.src = phoneSoundURL.get();
-  ringtonePlayer.loop = true;
-
-  var activateVibration = null;
-  SettingsListener.observe('vibration.enabled', true, function(value) {
-    activateVibration = !!value;
-  });
 
   var screenLock;
 
@@ -247,33 +218,10 @@ var CallsHandler = (function callsHandler() {
   }
 
   function handleFirstIncoming(call) {
-    var vibrateInterval = 0;
-    if (activateVibration != false) {
-      vibrateInterval = window.setInterval(function vibrate() {
-        // Wait for the setting value to return before starting a vibration.
-        if ('vibrate' in navigator && activateVibration) {
-          navigator.vibrate([200]);
-        }
-      }, 600);
-    }
-
-    if (activePhoneSound == true) {
-      ringtonePlayer.play();
-      ringing = true;
-    } else if (activePhoneSound == null) {
-      // Let's wait for the setting to return before playing any sound.
-      ringing = true;
-    }
-
     screenLock = navigator.requestWakeLock('screen');
 
     call.addEventListener('statechange', function callStateChange() {
       call.removeEventListener('statechange', callStateChange);
-
-      ringtonePlayer.pause();
-      ringing = false;
-
-      window.clearInterval(vibrateInterval);
 
       if (screenLock) {
         screenLock.unlock();

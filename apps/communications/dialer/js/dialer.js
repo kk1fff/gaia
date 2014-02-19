@@ -11,6 +11,13 @@ var CallHandler = (function callHandler() {
 
   /* === Settings === */
   var screenState = null;
+  var activePhoneSound = null;
+  var activateVibration = null;
+  var ringing = false;
+  var phoneSoundURL;
+  var ringtonePlayer = new Audio();
+  ringtonePlayer.mozAudioChannelType = 'ringer';
+  ringtonePlayer.loop = true;
 
   // Add the listener onload
   window.addEventListener('load', function getSettingsListener() {
@@ -18,12 +25,32 @@ var CallHandler = (function callHandler() {
 
     setTimeout(function nextTick() {
       LazyLoader.load('/shared/js/settings_listener.js', function() {
+        phoneSoundURL = new SettingsURL();
+        ringtonePlayer.src = phoneSoundURL.get();
         SettingsListener.observe('lockscreen.locked', null, function(value) {
           if (value) {
             screenState = 'locked';
           } else {
             screenState = 'unlocked';
           }
+        });
+        SettingsListener.observe('audio.volume.notification', 7,
+                                 function(value) {
+                                   activePhoneSound = !!value;
+                                   if (ringing && activePhoneSound) {
+                                     ringtonePlayer.play();
+                                   }
+                                 });
+        SettingsListener.observe('dialer.ringtone', '', function(value) {
+          ringtonePlayer.pause();
+          ringtonePlayer.src = phoneSoundURL.set(value);
+
+          if (ringing && activePhoneSound) {
+            ringtonePlayer.play();
+          }
+        });
+        SettingsListener.observe('vibration.enabled', true, function(value) {
+          activateVibration = !!value;
         });
       });
     });
@@ -146,6 +173,9 @@ var CallHandler = (function callHandler() {
     telephony.oncallschanged = function dialer_oncallschanged(evt) {
       if (telephony.calls.length !== 0) {
         openCallScreen();
+        if (telephony.calls.length === 1) {
+          handleFirstIncoming(telephony.calls[0]);
+        }
       }
     };
   }
@@ -370,6 +400,35 @@ var CallHandler = (function callHandler() {
       sendCommandToCallScreen('BT', command);
     });
     btCommandsToForward = [];
+  }
+
+  function handleFirstIncoming(call) {
+    var vibrateInterval = 0;
+    if (activateVibration != false) {
+      vibrateInterval = window.setInterval(function vibrate() {
+        // Wait for the setting value to return before starting a vibration.
+        if ('vibrate' in navigator && activateVibration) {
+          navigator.vibrate([200]);
+        }
+      }, 600);
+    }
+
+    if (activePhoneSound == true) {
+      ringtonePlayer.play();
+      ringing = true;
+    } else if (activePhoneSound == null) {
+      // Let's wait for the setting to return before playing any sound.
+      ringing = true;
+    }
+
+    call.addEventListener('statechange', function callStateChange() {
+      call.removeEventListener('statechange', callStateChange);
+
+      ringtonePlayer.pause();
+      ringing = false;
+
+      window.clearInterval(vibrateInterval);
+    });
   }
 
   /* === MMI === */
