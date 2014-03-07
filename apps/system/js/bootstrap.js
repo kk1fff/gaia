@@ -4,6 +4,7 @@
 'use strict';
 
 window.addEventListener('load', function startup() {
+  window.dialerRinger = new DialerRinger().start();
   function safelyLaunchFTU() {
     window.addEventListener('homescreen-ready', function onHomescreenReady() {
       window.removeEventListener('homescreen-ready', onHomescreenReady);
