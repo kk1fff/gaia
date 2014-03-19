@@ -751,7 +751,7 @@ var CallsHandler = (function callsHandler() {
 
 window.addEventListener('load', function callSetup(evt) {
   window.removeEventListener('load', callSetup);
-
+  dump('1111ring');
   CallsHandler.setup();
   CallScreen.init();
   KeypadManager.init(true);
