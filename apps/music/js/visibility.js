@@ -11,7 +11,7 @@ var Visibility = {
 
   _visibilityHandler: function(event) {
     if (document.hidden) {
-      this.cleanViews();
+      window.close();
     } else {
       this.createViews();
     }
