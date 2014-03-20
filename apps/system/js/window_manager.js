@@ -310,7 +310,7 @@ var WindowManager = (function() {
     // We do this because we don't want the trustedUI opener
     // is killed in background due to OOM.
     if (!TrustedUIManager.hasTrustedUI(origin)) {
-      app.setVisible(false, true);
+      app.setVisible(false);
     }
 
     // Inform keyboardmanager that we've finished the transition
