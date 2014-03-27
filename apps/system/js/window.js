@@ -270,12 +270,16 @@
       function onerror(e) {
         if (e.detail.type !== 'fatal')
           return;
-        // If the crashing app is currently displayed, we will present
-        // the user with a banner notification.
-        if (this.isActive()) {
-          CrashReporter.setAppName(this.name);
-        }
 
+        if (e.detail.reason == 'critical') {
+          dump('TEST: killed by critical app');
+        } else {
+          // If the crashing app is currently displayed, we will present
+          // the user with a banner notification.
+          if (this.isActive()) {
+            CrashReporter.setAppName(this.name);
+          }
+        }
         this.kill();
       }.bind(this));
 
