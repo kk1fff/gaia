@@ -183,7 +183,11 @@ var Contacts = (function() {
     }
     document.body.classList.remove('hide');
     displayed = true;
-    utils.PerformanceHelper.visuallyComplete();
+    window.addEventListener('MozAfterPaint', function after_paint_listener(e) {
+      dump("visuallyLoaded: delay: " + e.eventDelay);
+      utils.PerformanceHelper.visuallyComplete();
+      window.removeEventListener('MozAfterPaint', after_paint_listener);
+    });
   };
 
   var addExtrasToContact = function addExtrasToContact(extrasString) {
@@ -1024,7 +1028,11 @@ var Contacts = (function() {
   };
 
   window.addEventListener('DOMContentLoaded', function onLoad() {
-    utils.PerformanceHelper.domLoaded();
+    window.addEventListener('MozAfterPaint', function after_paint_listener(e) {
+      dump("navigationLoaded: delay: " + e.eventDelay);
+      utils.PerformanceHelper.domLoaded();
+      window.removeEventListener('MozAfterPaint', after_paint_listener);
+    });
     window.removeEventListener('DOMContentLoaded', onLoad);
   });
 
