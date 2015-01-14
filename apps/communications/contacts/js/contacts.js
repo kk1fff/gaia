@@ -183,7 +183,17 @@ var Contacts = (function() {
     }
     document.body.classList.remove('hide');
     displayed = true;
-    utils.PerformanceHelper.visuallyComplete();
+    window.markStart('visuallyLoaded');
+    window.addEventListener('MozAfterPaint', function after_paint_listener(e) {
+      var d = window.markTest('visuallyLoaded')  - e.eventDelay;
+      if (d > 0) {
+        dump("visuallyLoaded: from ending setup: " + window.markEnd('visuallyLoaded'));
+        dump("visuallyLoaded: event delay: " + e.eventDelay);
+        dump("visuallyLoaded: from ending setup to compositing: " + d);
+        utils.PerformanceHelper.visuallyComplete();
+        window.removeEventListener('MozAfterPaint', after_paint_listener);
+      }
+    });
   };
 
   var addExtrasToContact = function addExtrasToContact(extrasString) {
@@ -1027,7 +1037,11 @@ var Contacts = (function() {
   };
 
   window.addEventListener('DOMContentLoaded', function onLoad() {
-    utils.PerformanceHelper.domLoaded();
+    window.addEventListener('MozAfterPaint', function after_paint_listener(e) {
+      dump("navigationLoaded: delay: " + e.eventDelay);
+      utils.PerformanceHelper.domLoaded();
+      window.removeEventListener('MozAfterPaint', after_paint_listener);
+    });
     window.removeEventListener('DOMContentLoaded', onLoad);
   });
 
