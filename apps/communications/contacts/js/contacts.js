@@ -183,7 +183,9 @@ var Contacts = (function() {
     }
     document.body.classList.remove('hide');
     displayed = true;
+    window.markStart('visuallyLoaded');
     window.addEventListener('MozAfterPaint', function after_paint_listener(e) {
+      dump("visuallyLoaded: from ending setup: " + window.markEnd('visuallyLoaded'));
       dump("visuallyLoaded: delay: " + e.eventDelay);
       utils.PerformanceHelper.visuallyComplete();
       window.removeEventListener('MozAfterPaint', after_paint_listener);
